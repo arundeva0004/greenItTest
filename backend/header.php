@@ -8,5 +8,5 @@ header('application/x-www-form-urlencoded');
 /* Collect input data from browser request and which type of content*/
 header('Content-Type: application/json, charset=utf-8');
 /*It will allow any GET, POST, or OPTIONS requests from any origin. */
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 
