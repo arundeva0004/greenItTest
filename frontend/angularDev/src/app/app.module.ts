@@ -3,27 +3,28 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
-import { FormsModule } from  '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from  '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CreateComponent } from './component/create/create.component';
-import { EditComponent } from './component/edit/edit.component';
 import {ApiService} from "./service/api.service";
 import { DashboardComponent } from './component/dashboard/dashboard.component';
+import { HeaderComponent } from './component/header/header.component';
+import { GridModule } from '@progress/kendo-angular-grid';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CreateComponent,
-    EditComponent,
-    DashboardComponent
+    DashboardComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    GridModule,
     ToastrModule.forRoot(
       { timeOut: 3500,
         positionClass: 'toast-top-center',

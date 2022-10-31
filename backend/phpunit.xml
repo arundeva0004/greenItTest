@@ -1,11 +1,16 @@
+<?xml version="1.0"  encoding="UTF-8" ?>
 
-<?xml version="1.0" encoding="UTF-8" ?>
 <phpunit bootstrap="vendor/autoload.php"
-         colors="true" stopOnFailure="false">
+         colors="true" stopOnFailure="false" verbose="true">
 
-        <testSuites>
-            <testSuite name="CsvFileContent">
-                <directory>tests</directory>
-            </testSuite>
-        </testSuites>
+    <testsuites>
+
+        <testsuite name="CsvFileTest">
+
+            <directory>tests</directory>
+
+        </testsuite>
+
+    </testsuites>
+
 </phpunit>

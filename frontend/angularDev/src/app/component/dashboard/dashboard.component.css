@@ -1,5 +1,6 @@
 
 .m-r-5 {margin-right : 5px;}
+.m-r-10 {margin-right : 10px;}
 .m-t-10 {margin-top : 10px;}
 .m-b-10 {margin-bottom : 10px;}
 
@@ -12,3 +13,20 @@ th {
 }
 
 input{ width: 80%}
+
+.error-message {
+  color: red;
+}
+
+.button_right{
+  float: right;
+}
+
+
+.headerCustomClass {
+  color: #fff;
+}
+
+th.headerCustomClass {
+  text-align: right;
+}
