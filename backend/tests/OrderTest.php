@@ -1,12 +1,12 @@
 <?php
 
 namespace tests;
-use App\CsvFileContent;
+use App\OrderController;
 use PHPUnit\Framework\TestCase;
-class CsvFileTest extends TestCase{
+class OrderTest extends TestCase{
 
     const CSV_FILE_PATH = __DIR__ . "\..\public";
-    public $fileContent = null;
+    public $orderController = null;
 
     public function  testTrueReturnsTrue() {
 
@@ -15,7 +15,7 @@ class CsvFileTest extends TestCase{
 
     /*Checking file exist or not */
     public function testFileExist(){
-        $this->assertFileExists(self::CSV_FILE_PATH . "\CsvItems.csv");
+        $this->assertFileExists(self::CSV_FILE_PATH . "\OrderDetails.csv");
     }
 
     /*Check given directory is writable or not */
@@ -29,7 +29,7 @@ class CsvFileTest extends TestCase{
     }
 
     /*get all csv records from the csv file*/
-    public function testGetCsvData(){
+    public function testGetAllOrders(){
 
         $this->assertEquals([
             [
@@ -78,11 +78,11 @@ class CsvFileTest extends TestCase{
                 "qty" => "1",
                 "item" => "TR909"
             ]
-            ], $this->getCsvFileContent()->getAllCsvRecords(), "Csv file records doesn't match with specified array");
+            ], $this->getOrderController()->getAllOrders(), "Csv file records doesn't match with specified array");
     }
 
     /*Add new data to csv file */
-    public function testAddNewData()
+    public function testAddOrder()
     {
         $newArray = [
             "id" => "6",
@@ -94,8 +94,8 @@ class CsvFileTest extends TestCase{
             "item" => "TN5125"
         ];
         $this->assertCount(7, $newArray);
-        $this->getCsvFileContent()->addNewRowToCSVFile($newArray);
-        $this->assertContains($newArray, $this->getCsvFileContent()->getAllCsvRecords(),"New data is not contains the csv file");
+        $this->getOrderController()->addOrderToCSVFile($newArray);
+        $this->assertContains($newArray, $this->getOrderController()->getAllOrders(),"New data is not contains the csv file");
     }
 
     /*update the csv data*/
@@ -109,8 +109,8 @@ class CsvFileTest extends TestCase{
             "qty" => "3",
             "item" => "MKII4400"
         ];
-        $this->getCsvFileContent()->updateRowToCSVFile($updateArray);
-        $this->assertContains($updateArray, $this->getCsvFileContent()->getAllCsvRecords(),"There was problem while updating your data");
+        $this->getOrderController()->updateOrderToCSVFile($updateArray);
+        $this->assertContains($updateArray, $this->getOrderController()->getAllOrders(),"There was problem while updating your data");
     }
 
     /*update the  data from csv file */
@@ -127,9 +127,9 @@ class CsvFileTest extends TestCase{
         ];
 
         $this->assertIsArray($removeArray);
-        $result = $this->getCsvFileContent()->removeRowFromCsvFile($removeArray);
+        $result = $this->getOrderController()->removeOrderFromCsvFile($removeArray);
         $this->assertJson($result);
-        $this->assertNotContains($removeArray, $this->getCsvFileContent()->getAllCsvRecords(),"There was problem removing your data");
+        $this->assertNotContains($removeArray, $this->getOrderController()->getAllOrders(),"There was problem removing your data");
     }
 
     /*validate the post data */
@@ -144,15 +144,14 @@ class CsvFileTest extends TestCase{
             "item" => "TR909"
         ];
 
-        $this->assertEmpty($this->getCsvFileContent()->formDataValidations($postData, ""), "Your post data is not valid");
+        $this->assertEmpty($this->getOrderController()->formDataValidations($postData, ""), "Your post data is not valid");
 
     }
 
-    /*create object only one time and return */
-    public function getCsvFileContent(){
-        if($this->fileContent == null){
-            $this->fileContent = new CsvFileContent();
+    public function getOrderController(){
+        if($this->orderController == null){
+            $this->orderController = new OrderController();
         }
-        return $this->fileContent;
+        return $this->orderController;
     }
 }

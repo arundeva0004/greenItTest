@@ -6,16 +6,22 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormsModule, ReactiveFormsModule } from  '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {ApiService} from "./service/api.service";
-import { DashboardComponent } from './component/dashboard/dashboard.component';
+import {OrderService} from "./service/order.service";
+import { OrderComponent } from './component/order/order.component';
 import { HeaderComponent } from './component/header/header.component';
 import { GridModule } from '@progress/kendo-angular-grid';
+import { EditOrderComponent } from './component/edit-order/edit-order.component';
+import {DialogModule} from "@progress/kendo-angular-dialog";
+import {FormFieldModule, TextBoxModule} from "@progress/kendo-angular-inputs";
+import {ButtonModule} from "@progress/kendo-angular-buttons";
+import {LabelModule} from "@progress/kendo-angular-label";
 
 @NgModule({
   declarations: [
     AppComponent,
-    DashboardComponent,
-    HeaderComponent
+    OrderComponent,
+    HeaderComponent,
+    EditOrderComponent
   ],
   imports: [
     BrowserModule,
@@ -26,12 +32,19 @@ import { GridModule } from '@progress/kendo-angular-grid';
     BrowserAnimationsModule,
     GridModule,
     ToastrModule.forRoot(
-      { timeOut: 3500,
+      {
+        timeOut: 3500,
         positionClass: 'toast-top-center',
-        preventDuplicates: true}
-    )
+        preventDuplicates: true
+      }
+    ),
+    DialogModule,
+    FormFieldModule,
+    TextBoxModule,
+    ButtonModule,
+    LabelModule
   ],
-  providers: [ApiService],
+  providers: [OrderService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

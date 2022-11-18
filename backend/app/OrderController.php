@@ -3,29 +3,30 @@
 namespace App;
 use Exception;
 if(isset($_SERVER['REQUEST_METHOD'])){
-    require_once "CsvHeader.php";
+    if(file_exists('AppHeader.php')) require_once('AppHeader.php');
 }
-require_once "CsvLog.php";
+if(file_exists('OrderLog.php')) require_once "OrderLog.php";
 
-interface CsvDataInterface {
-    function getAllCsvRecords($listRecords);    //list all records from csv file
-    function addNewRowToCSVFile($inputData);    //add new record to csv file
-    function updateRowToCSVFile($postData);     //update record to csv file
-    function removeRowFromCsvFile($postData);   //remove record from csv file
+interface OrderInterface {
+    function getAllOrders($listRecords);
+    function newOrderToCSVFile($inputData);
+    function updateOrderToCSVFile($postData);
+    function deleteOrderFromCsvFile($postData);
 }
 
-class CsvFileContent implements CsvDataInterface
+
+class OrderController implements OrderInterface
 {
 
-    const CSV_FILE_PATH = __DIR__ . "\..\public\CsvItems.csv";
-    const LOG_FILE_NAME = '\CsvLog.txt';
+    const CSV_FILE_PATH = __DIR__ . "\..\public\OrderItems.csv";
+    const LOG_FILE_NAME = '\OrderLog.txt';
     const CSV_FILE_UPDATE = "update";
     const CSV_FILE_DELETE = "delete";
     protected $log;
 
     public function __construct(){
 
-        $this->log = new CsvLog();//initialize log object here
+        $this->log = new OrderLog();//initialize log object here
         if(isset($_SERVER['REQUEST_METHOD'])){
         $this->logWrite('SERVER_NAME - '.$_SERVER['SERVER_NAME']);
         $this->logWrite('HTTP_HOST - '.$_SERVER['HTTP_HOST']);
@@ -37,12 +38,12 @@ class CsvFileContent implements CsvDataInterface
     /* get all records from csv file
         @return data should be json format
     */
-    public function getAllCsvRecords($listRecords = [])
+    function getAllOrders($listRecords = [])
     {
         try{
 
             $this->logWrite('*****getAllCsvRecords - Starts ******');
-            if (($open = fopen(CsvFileContent::CSV_FILE_PATH, "r")) !== FALSE)
+            if (($open = fopen(OrderController::CSV_FILE_PATH, "r")) !== FALSE)
             {
                 $dataArray =[];
                 $headers = [];
@@ -73,20 +74,19 @@ class CsvFileContent implements CsvDataInterface
                 return $listRecords;
             }
         } catch (Exception $e){
-            $this->logWrite('CsvFileContent::getAllCsvRecords - Error Message - ' . $e->getMessage());
-            $this->logWrite('CsvFileContent::getAllCsvRecords - Error File - ' . $e->getFile());
-            $this->logWrite('CsvFileContent::getAllCsvRecords - Error Line - ' . $e->getLine());
+            $this->logWrite('OrderController::getAllCsvRecords - Error Message - ' . $e->getMessage());
+            $this->logWrite('OrderController::getAllCsvRecords - Error File - ' . $e->getFile());
+            $this->logWrite('OrderController::getAllCsvRecords - Error Line - ' . $e->getLine());
             http_response_code('403');
             echo json_encode(['title' => 'Error', 'description' => "Failed to load data!"], true);
         }
     }
 
-    public function addNewRowToCSVFile($postData)
+    public function newOrderToCSVFile($postData)
     {
         try{
 
-            $this->logWrite('*****addNewRowToCSVFile - Starts ******');
-            $file = fopen(self::CSV_FILE_PATH,"a");
+            $this->logWrite('*****newOrderToCSVFile - Starts ******');
             $data = [];
 
             $this->push($data, $postData['id']);
@@ -112,13 +112,13 @@ class CsvFileContent implements CsvDataInterface
             rewind($myFile);
             fclose($myFile);
 
-            $this->logWrite('*****addNewRowToCSVFile - Ends ******');
-
-            echo json_encode(['title' => 'Success', 'description' => 'New data added successfully'], true);
+            $this->logWrite('*****newOrderToCSVFile - Ends ******');
+            http_response_code('200');
+            echo json_encode(['title' => 'Success', 'description' => 'Ordered successfully'], true);
         } catch (Exception $e){
-            $this->logWrite('CsvFileContent::addNewRowToCSVFile - Error Message - ' . $e->getMessage());
-            $this->logWrite('CsvFileContent::addNewRowToCSVFile - Error File - ' . $e->getFile());
-            $this->logWrite('CsvFileContent::addNewRowToCSVFile - Error Line - ' . $e->getLine());
+            $this->logWrite('OrderController::addNewRowToCSVFile - Error Message - ' . $e->getMessage());
+            $this->logWrite('OrderController::addNewRowToCSVFile - Error File - ' . $e->getFile());
+            $this->logWrite('OrderController::addNewRowToCSVFile - Error Line - ' . $e->getLine());
             http_response_code('403');
             echo json_encode(['title' => 'Error', 'description' =>  $e->getMessage()], true);
         }
@@ -128,21 +128,22 @@ class CsvFileContent implements CsvDataInterface
      @description To update given row information to the csv file
      @postData $postData from input data for new row
      */
-    public function updateRowToCSVFile($postData)
+    public function updateOrderToCSVFile($postData)
     {
         try{
 
-            $this->logWrite('*****updateRowToCSVFile - Starts ******');
+            $this->logWrite('*****updateOrderToCSVFile - Starts ******');
 
             $this->updateCSVFile($postData, self::CSV_FILE_UPDATE);
 
-            $this->logWrite('*****updateRowToCSVFile - Ends ******');
+            $this->logWrite('*****updateOrderToCSVFile - Ends ******');
 
-            echo json_encode(['title' => 'Success', 'description' => "Data updated successfully"], true);
+            http_response_code('200');
+            echo json_encode(['title' => 'Success', 'description' => "Order updated successfully"], true);
         } catch (Exception $e){
-            $this->logWrite('CsvFileContent::updateRowToCSVFile - Error Message - ' . $e->getMessage());
-            $this->logWrite('CsvFileContent::updateRowToCSVFile - Error File - ' . $e->getFile());
-            $this->logWrite('CsvFileContent::updateRowToCSVFile - Error Line - ' . $e->getLine());
+            $this->logWrite('OrderController::updateRowToCSVFile - Error Message - ' . $e->getMessage());
+            $this->logWrite('OrderController::updateRowToCSVFile - Error File - ' . $e->getFile());
+            $this->logWrite('OrderController::updateRowToCSVFile - Error Line - ' . $e->getLine());
             http_response_code('403');
             echo json_encode(['title' => 'Error', 'description' => $e->getMessage()], true);
         }
@@ -150,13 +151,14 @@ class CsvFileContent implements CsvDataInterface
     }
 
     /*remove row from csv file */
-    public function removeRowFromCsvFile($postData)
+    public function deleteOrderFromCsvFile($postData)
     {
         try{
 
             $this->logWrite('*****updateRowToCSVFile - Starts ******');
 
             $this->updateCSVFile($postData, self::CSV_FILE_DELETE);
+            http_response_code('200');
             $response = json_encode(['title' => 'Success', 'description' => "Data deleted successfully"], true);
 
             $this->logWrite('*****updateRowToCSVFile - Ends ******');
@@ -168,9 +170,9 @@ class CsvFileContent implements CsvDataInterface
             }
 
         } catch (Exception $e){
-            $this->logWrite('CsvFileContent::removeRowFromCsvFile - Error Message - ' . $e->getMessage());
-            $this->logWrite('CsvFileContent::removeRowFromCsvFile - Error File - ' . $e->getFile());
-            $this->logWrite('CsvFileContent::removeRowFromCsvFile - Error Line - ' . $e->getLine());
+            $this->logWrite('OrderController::removeRowFromCsvFile - Error Message - ' . $e->getMessage());
+            $this->logWrite('OrderController::removeRowFromCsvFile - Error File - ' . $e->getFile());
+            $this->logWrite('OrderController::removeRowFromCsvFile - Error Line - ' . $e->getLine());
             http_response_code('403');
             echo json_encode(['title' => 'Error', 'description' => $e->getMessage()], true);
         }
@@ -241,9 +243,9 @@ class CsvFileContent implements CsvDataInterface
             fclose($myfile);
 
         } catch (Exception $e){
-            $this->logWrite('CsvFileContent::updateCSVFile - Error Message - ' . $e->getMessage());
-            $this->logWrite('CsvFileContent::updateCSVFile - Error File - ' . $e->getFile());
-            $this->logWrite('CsvFileContent::updateCSVFile - Error Line - ' . $e->getLine());
+            $this->logWrite('OrderController::updateCSVFile - Error Message - ' . $e->getMessage());
+            $this->logWrite('OrderController::updateCSVFile - Error File - ' . $e->getFile());
+            $this->logWrite('OrderController::updateCSVFile - Error Line - ' . $e->getLine());
             throw new Exception("Failed to updated csv data");
         }
     }
@@ -317,7 +319,7 @@ class CsvFileContent implements CsvDataInterface
         } else {
 
             // check if zip only contains letters and whitespace
-            if (!preg_match("/[A-Za-z0-9]+/", $postData["zip"])) {
+            if (!preg_match("/[0-9]+/", $postData["zip"])) {
                 $zipErr = "Only alphabets and white space  and numbers are allowed zip field";
             }
         }
@@ -375,15 +377,13 @@ class CsvFileContent implements CsvDataInterface
     public function logWrite($strData){
         $this->log->Write(self::LOG_FILE_NAME,$strData);
     }
-
-
 }
 
 
-function CSVInit(){
+function OrderInit(){
 
     // initialize CsvLog object
-    $file_content = new CsvFileContent(); //initialize object
+    $file_content = new OrderController(); //initialize object
     $errors = ""; //post data errors
     $postData = json_decode(file_get_contents('php://input'), true); // get request input data
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -394,10 +394,10 @@ function CSVInit(){
             http_response_code('403');
             exit;
         }
-        $file_content->addNewRowToCSVFile($postData);
+        $file_content->newOrderToCSVFile($postData);
 
     } else if($_SERVER['REQUEST_METHOD'] === 'GET'){
-        $file_content->getAllCsvRecords();
+        $file_content->getAllOrders();
     } else if($_SERVER['REQUEST_METHOD'] === 'PUT'){
         $errors =  $file_content->formDataValidations($postData, $errors);
         if(!empty($errors)){
@@ -405,14 +405,14 @@ function CSVInit(){
             echo $errors;
             exit;
         }
-        $file_content->updateRowToCSVFile($postData);
+        $file_content->updateOrderToCSVFile($postData);
     } else if($_SERVER['REQUEST_METHOD'] === 'DELETE'){
 
-        $file_content->removeRowFromCsvFile($postData);
+        $file_content->deleteOrderFromCsvFile($postData);
     }
 }
 
-if(isset($_SERVER['REQUEST_METHOD'])) CSVInit();
+if(isset($_SERVER['REQUEST_METHOD'])) OrderInit();
 
 
 

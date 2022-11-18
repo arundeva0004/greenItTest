@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ApiService } from './api.service';
+import { OrderService } from './order.service';
 import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ToastrModule} from 'ngx-toastr';
@@ -8,7 +8,7 @@ import {of} from "rxjs";
 
 describe('ApiService', () => {
 
-  let apiService: ApiService;
+  let apiService: OrderService;
   let httpClientSpy : jasmine.SpyObj<HttpClient>;
 
   //Mock CSV Data
@@ -25,13 +25,13 @@ describe('ApiService', () => {
     TestBed.configureTestingModule({
       imports : [HttpClientTestingModule,
         ToastrModule.forRoot()],
-      providers: [ ApiService,
+      providers: [ OrderService,
         {provide: HttpClient, useValue: httpClientSpy}
       ]
     });
 
     //act
-    apiService = TestBed.inject(ApiService);
+    apiService = TestBed.inject(OrderService);
     httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
 
   });
@@ -47,7 +47,7 @@ describe('ApiService', () => {
 
     //act
     httpClientSpy.get.and.returnValue(of(CSV_RECORDS));
-    apiService.loadCSVData().subscribe({
+    apiService.getAllOrders().subscribe({
       next : (result) => {
         //assert
         expect(result.length).toBe(4);
@@ -69,7 +69,7 @@ describe('ApiService', () => {
     let newCsvData = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
 
     httpClientSpy.post.and.returnValue(of(newCsvData));
-    apiService.addNewData(newCsvData).subscribe({
+    apiService.newOrder(newCsvData).subscribe({
       next : (result) => {
         //assert
         expect(result).toEqual(newCsvData);
@@ -119,7 +119,7 @@ describe('ApiService', () => {
       status: 200
     })));
 
-    apiService.deleteData(deleteCsvData).subscribe({
+    apiService.deleteOrder(deleteCsvData).subscribe({
       next : (result) => {
 
         //assert

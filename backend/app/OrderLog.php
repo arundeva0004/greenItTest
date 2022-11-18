@@ -3,7 +3,7 @@
 namespace App;
 
 
-class CsvLog{
+class OrderLog{
 
     const ROUTE_PATH = __DIR__ . "\..\logs";//directory path for logs
 

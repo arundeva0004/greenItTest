@@ -1,4 +1,4 @@
-export interface CsvData {
+export interface Order {
   id: number;
   name: string;
   state : string;

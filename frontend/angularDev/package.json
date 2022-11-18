@@ -38,6 +38,7 @@
     "@progress/kendo-theme-bootstrap": "^5.8.1",
     "@progress/kendo-theme-default": "^5.8.1",
     "@progress/kendo-theme-material": "^5.8.1",
+    "bootstrap": "^5.2.2",
     "bootstrap-icons": "^1.9.1",
     "jasmine-auto-spies": "^6.9.9",
     "ngx-toastr": "^15.0.0",

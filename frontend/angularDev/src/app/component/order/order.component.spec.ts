@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed, async, fakeAsync} from '@angular/core/testing';
-import { DashboardComponent } from './dashboard.component';
-import {ApiService} from "../../service/api.service";
+import { OrderComponent } from './order.component';
+import {OrderService} from "../../service/order.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NotificationService} from "../../service/notification.service";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -12,9 +12,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 describe('DashboardComponent', () => {
 
-  let component: DashboardComponent;
-  let fixture: ComponentFixture<DashboardComponent>;
-  let apiService : ApiService;
+  let component: OrderComponent;
+  let fixture: ComponentFixture<OrderComponent>;
+  let apiService : OrderService;
   let mockApiService : any;
   let apiServiceSpy : jasmine.SpyObj<HttpClient>;
   let CSV_RECORDS = [
@@ -27,12 +27,12 @@ describe('DashboardComponent', () => {
   //arrange
   beforeEach(async () => {
 
-     apiServiceSpy = jasmine.createSpyObj( ['loadCSVData','addNewData','onUpdate','deleteData']);
+     apiServiceSpy = jasmine.createSpyObj( ['loadCSVData','addNewData','updateOrder','deleteData']);
     await TestBed.configureTestingModule({
-      declarations: [DashboardComponent],
+      declarations: [OrderComponent],
       imports: [ HttpClientTestingModule,FormsModule,ReactiveFormsModule,
         RouterTestingModule, ToastrModule.forRoot()],
-      providers: [ApiService,
+      providers: [OrderService,
         NotificationService,
         {provide: ToastrService, useClass: ToastrService},
         {provide: apiService, useValue: apiServiceSpy}
@@ -41,12 +41,12 @@ describe('DashboardComponent', () => {
       .compileComponents();
 
     //act
-    apiService =  TestBed.inject(ApiService);
-    fixture = TestBed.createComponent(DashboardComponent);
+    apiService =  TestBed.inject(OrderService);
+    fixture = TestBed.createComponent(OrderComponent);
     component = fixture.componentInstance;
     apiServiceSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
 
-    mockApiService = jasmine.createSpyObj(['loadCSVData','addNewData','onUpdate','deleteData'])
+    mockApiService = jasmine.createSpyObj(['loadCSVData','addNewData','updateOrder','deleteData'])
     //httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
     fixture.detectChanges();
 
@@ -83,41 +83,27 @@ describe('DashboardComponent', () => {
   it('should call loadCsvData and return all records', fakeAsync(  () => {
 
     //act
-    spyOn(apiService,"loadCSVData").and.callFake(() => {
+    spyOn(apiService,"getAllOrders").and.callFake(() => {
       return of(CSV_RECORDS);
     });
-    component.loadCSVData();
+    component.getAllOrders();
 
     //assert
     expect(component.gridData).toEqual(CSV_RECORDS);
 
   }))
 
-  /*it('Should call update method and check value is updated', () =>{
-
-    //act
-    let updatedData = CSV_RECORDS[1];
-    updatedData.name = "Jasprit Bumrah";
-    spyOn(apiService,"onUpdate").and.callFake(() => {
-      return of(updatedData);
-    });
-    component.saveHandler(updatedData);
-
-    //assert
-    expect(updatedData.name).toEqual("Jasprit Bumrah");
-  })*/
-
   it('Should call post method to add new data to csv file', () =>{
 
     //act
     let newCsvData = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
-    spyOn(component,"addNewData").and.callFake(() => {
+    spyOn(component,"newOrder").and.callFake(() => {
       return of(newCsvData);
     });
-    component.addNewData(newCsvData);
+    component.newOrder(newCsvData);
 
     //assert
-    expect(component.addNewData).toHaveBeenCalled();
+    expect(component.newOrder).toHaveBeenCalled();
   })
 
 });

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html >
+<body>
+
+<div class="container">
+      <div class="row">
+        <kendo-grid
+          [kendoGridBinding]="gridData"
+          [pageSize]="10"
+          [pageable]="{
+                          buttonCount: 5,
+                          info: true,
+                          type: 'input',
+                          pageSizes: [10, 25, 50],
+                          previousNext: true,
+                          position: 'bottom'
+                          }"
+          [sortable]="true"
+          filterable="menu"
+          [resizable]="true"
+          [height]="450"
+          (edit)="editOrder($event)"
+          (cancel)="cancelOrder($event)"
+          (remove)="deleteOrder($event)"
+          (add)="addOrder()"
+        >
+          <ng-template kendoGridToolbarTemplate>
+            <button kendoGridAddCommand>Add new</button>
+          </ng-template>
+
+        <kendo-grid-column field="id" title="ID" [filterable]="false" [editable]="false"
+                           [headerStyle]="{ 'background-color': '#87cefa' }"
+                           [headerClass]="'headerCustomClass'" > </kendo-grid-column>
+        <kendo-grid-column field="name" title="Name"
+                           [headerStyle]="{ 'background-color': '#87cefa' }"
+                           [headerClass]="'headerCustomClass'" > </kendo-grid-column>
+        <kendo-grid-column field="state" title="State" [headerStyle]="{ 'background-color': '#87cefa' }"
+                           [headerClass]="'headerCustomClass'" > </kendo-grid-column>
+        <kendo-grid-column field="zip" title="Zip" [headerStyle]="{ 'background-color': '#87cefa' }"
+                           [headerClass]="'headerCustomClass'" > </kendo-grid-column>
+        <kendo-grid-column field="amount" title="Amount" [headerStyle]="{ 'background-color': '#87cefa' }"
+                           [headerClass]="'headerCustomClass'" > </kendo-grid-column>
+        <kendo-grid-column field="item" title="Item" [headerStyle]="{'background-color': '#87cefa' }"
+                           [headerClass]="'headerCustomClass'" > </kendo-grid-column>
+        <kendo-grid-command-column
+          title="Actions" [includeInChooser]="false" [width]="200" [headerStyle]="{ 'background-color': '#87cefa' }"
+          [headerClass]="'headerCustomClass'">
+
+          <ng-template kendoGridCellTemplate let-isNew="isNew">
+            <button kendoGridEditCommand type="button" [primary]="true">
+              <i class="bi bi-pencil-square" title="Edit"></i>
+            </button>
+            <button kendoGridRemoveCommand type="button"><i class="bi bi-trash-fill"></i>
+            </button>
+            <button
+              kendoGridSaveCommand
+              type="button" [disabled]="OrderGridFormGroup?.invalid">
+              <span *ngIf="!isNew" ><i title="Save" class="bi bi-save-fill"></i></span>
+            </button>
+            <button kendoGridCancelCommand type="button">
+              <span *ngIf="!isNew"><i title="Cancel" class="bi bi-x-circle-fill"></i></span>
+            </button>
+          </ng-template>
+        </kendo-grid-command-column>
+        </kendo-grid>
+
+
+        <app-edit-order
+          [isNew]="isNew"
+          [model] ="editOrderItem"
+          [active] = "active"
+          (save)="newOrder($event)"
+          (update)="updateOrder($event)"
+          (cancel)="cancelOrder($event)"> </app-edit-order>
+      </div>
+</div>
+
+</body>
+</html>
