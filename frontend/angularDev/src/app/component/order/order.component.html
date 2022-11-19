@@ -2,7 +2,7 @@
 <html >
 <body>
 
-<div class="container">
+<div id="order" class="container order">
       <div class="row">
         <kendo-grid
           [kendoGridBinding]="gridData"
@@ -25,7 +25,7 @@
           (add)="addOrder()"
         >
           <ng-template kendoGridToolbarTemplate>
-            <button kendoGridAddCommand>Add new</button>
+            <button kendoGridAddCommand>New Order</button>
           </ng-template>
 
         <kendo-grid-column field="id" title="ID" [filterable]="false" [editable]="false"

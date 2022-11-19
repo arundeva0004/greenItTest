@@ -8,84 +8,87 @@
     {{ isNew ? "New Order" : "Edit Order" }}
   </kendo-dialog-titlebar>
 
-  <form class="col-12" [formGroup]="editOrder">
+  <form class="col-12" [formGroup]="OrderForm" >
 
-    <kendo-formfield>
-      <kendo-label text="Name"></kendo-label>
-      <kendo-textbox
-        formControlName="name"
-        #name
-        required
-      ></kendo-textbox>
-      <div class="col-12" *ngIf="editOrder.controls['name'].errors && (editOrder.controls['name'].touched || editOrder.controls['name'].dirty)">
-        <div class="error-message" *ngIf="editOrder.controls['name'].errors?.['required']" > Please Enter Name. </div>
-        <div class="error-message" *ngIf="editOrder.controls['name'].errors?.['pattern']" > Please enter valid name</div>
-      </div>
-    </kendo-formfield>
+    <div *ngIf="OrderForm">
+      <kendo-formfield>
+        <kendo-label text="Name"></kendo-label>
+        <kendo-textbox
+          formControlName="name"
+          #name
+          required
+        ></kendo-textbox>
+        <div class="col-12" *ngIf="OrderForm.controls['name'].errors && (OrderForm.controls['name'].touched || OrderForm.controls['name'].dirty)">
+          <div class="error-message" *ngIf="OrderForm.controls['name'].errors?.['required']" > Please Enter Name. </div>
+          <div class="error-message" *ngIf="OrderForm.controls['name'].errors?.['pattern']" > Please enter valid name</div>
+        </div>
+      </kendo-formfield>
 
-    <kendo-formfield>
-      <kendo-label text="Item"></kendo-label>
-      <kendo-textbox
-        formControlName="item"
-        #item
-        required
-      ></kendo-textbox>
-      <div class="col-12" *ngIf="editOrder.controls['item'].errors && (editOrder.controls['item'].touched || editOrder.controls['item'].dirty)">
-        <div class="error-message" *ngIf="editOrder.controls['item'].errors?.['required']" > Please Enter Item. </div>
-        <div class="error-message" *ngIf="editOrder.controls['item'].errors?.['pattern']" > Please enter valid item</div>
-      </div>
-    </kendo-formfield>
+      <kendo-formfield>
+        <kendo-label text="Item"></kendo-label>
+        <kendo-textbox
+          formControlName="item"
+          #item
+          required
+        ></kendo-textbox>
+        <div class="col-12" *ngIf="OrderForm.controls['item'].errors && (OrderForm.controls['item'].touched || OrderForm.controls['item'].dirty)">
+          <div class="error-message" *ngIf="OrderForm.controls['item'].errors?.['required']" > Please Enter Item. </div>
+          <div class="error-message" *ngIf="OrderForm.controls['item'].errors?.['pattern']" > Please enter valid item</div>
+        </div>
+      </kendo-formfield>
 
-    <kendo-formfield>
-      <kendo-label text="State"></kendo-label>
-      <kendo-textbox
-        formControlName="state"
-        #state
-        required
-      ></kendo-textbox>
-      <!--<kendo-formerror>Error: State is required</kendo-formerror>-->
-      <div class="col-12" *ngIf="editOrder.controls['state'].errors && (editOrder.controls['zip'].touched || editOrder.controls['zip'].dirty)">
-        <div class="error-message" *ngIf="editOrder.controls['state'].errors?.['required']" > Please Enter State. </div>
-        <div class="error-message" *ngIf="editOrder.controls['state'].errors?.['pattern']" > Please enter valid state</div>
-      </div>
-    </kendo-formfield>
-    <kendo-formfield>
-      <kendo-label text="Zip"></kendo-label>
-      <kendo-textbox
-        formControlName="zip"
-        #zip
-        required
-      ></kendo-textbox>
-      <div class="col-12" *ngIf="editOrder.controls['zip'].errors && (editOrder.controls['zip'].touched || editOrder.controls['zip'].dirty)">
-        <div class="error-message" *ngIf="editOrder.controls['zip'].errors?.['required']" > Please Enter Zip. </div>
-        <div class="error-message" *ngIf="editOrder.controls['zip'].errors?.['pattern']" > Please enter valid zip</div>
-      </div>
-    </kendo-formfield>
-    <kendo-formfield>
-      <kendo-label text="Quantity"></kendo-label>
-      <kendo-textbox
-        formControlName="qty"
-        required
-      ></kendo-textbox>
+      <kendo-formfield>
+        <kendo-label text="State"></kendo-label>
+        <kendo-textbox
+          formControlName="state"
+          #state
+          required
+        ></kendo-textbox>
+        <!--<kendo-formerror>Error: State is required</kendo-formerror>-->
+        <div class="col-12" *ngIf="OrderForm.controls['state'].errors && (OrderForm.controls['zip'].touched || OrderForm.controls['zip'].dirty)">
+          <div class="error-message" *ngIf="OrderForm.controls['state'].errors?.['required']" > Please Enter State. </div>
+          <div class="error-message" *ngIf="OrderForm.controls['state'].errors?.['pattern']" > Please enter valid state</div>
+        </div>
+      </kendo-formfield>
+      <kendo-formfield>
+        <kendo-label text="Zip"></kendo-label>
+        <kendo-textbox
+          formControlName="zip"
+          #zip
+          required
+        ></kendo-textbox>
+        <div class="col-12" *ngIf="OrderForm.controls['zip'].errors && (OrderForm.controls['zip'].touched || OrderForm.controls['zip'].dirty)">
+          <div class="error-message" *ngIf="OrderForm.controls['zip'].errors?.['required']" > Please Enter Zip. </div>
+          <div class="error-message" *ngIf="OrderForm.controls['zip'].errors?.['pattern']" > Please enter valid zip</div>
+        </div>
+      </kendo-formfield>
+      <kendo-formfield>
+        <kendo-label text="Quantity"></kendo-label>
+        <kendo-textbox
+          formControlName="qty"
+          required
+        ></kendo-textbox>
 
-      <div class="col-12" *ngIf="editOrder.controls['qty'].errors && (editOrder.controls['qty'].touched || editOrder.controls['qty'].dirty)">
-        <div class="error-message" *ngIf="editOrder.controls['qty'].errors?.['required']" > Please Enter Quantity. </div>
-        <div class="error-message" *ngIf="editOrder.controls['qty'].errors?.['pattern']" > Please enter numbers only</div>
-      </div>
+        <div class="col-12" *ngIf="OrderForm.controls['qty'].errors && (OrderForm.controls['qty'].touched || OrderForm.controls['qty'].dirty)">
+          <div class="error-message" *ngIf="OrderForm.controls['qty'].errors?.['required']" > Please Enter Quantity. </div>
+          <div class="error-message" *ngIf="OrderForm.controls['qty'].errors?.['pattern']" > Please enter numbers only</div>
+        </div>
 
-    </kendo-formfield>
-    <kendo-formfield>
-      <kendo-label text="Amount"></kendo-label>
-      <kendo-textbox
-        formControlName="amount"
-        #amount
-        required
-      ></kendo-textbox>
-      <div class="col-12" *ngIf="editOrder.controls['amount'].errors && (editOrder.controls['amount'].touched || editOrder.controls['amount'].dirty)">
-        <div class="error-message" *ngIf="editOrder.controls['amount'].errors?.['required']" > Please Enter Amount. </div>
-        <div class="error-message" *ngIf="editOrder.controls['amount'].errors?.['pattern']" > Please enter numbers only</div>
-      </div>
-    </kendo-formfield>
+      </kendo-formfield>
+      <kendo-formfield>
+        <kendo-label text="Amount"></kendo-label>
+        <kendo-textbox
+          formControlName="amount"
+          #amount
+          required
+        ></kendo-textbox>
+        <div class="col-12" *ngIf="OrderForm.controls['amount'].errors && (OrderForm.controls['amount'].touched || OrderForm.controls['amount'].dirty)">
+          <div class="error-message" *ngIf="OrderForm.controls['amount'].errors?.['required']" > Please Enter Amount. </div>
+          <div class="error-message" *ngIf="OrderForm.controls['amount'].errors?.['pattern']" > Please enter numbers only</div>
+        </div>
+      </kendo-formfield>
+    </div>
+
   </form>
 
   <kendo-dialog-actions>
@@ -93,7 +96,7 @@
     <button
       kendoButton
       themeColor="primary"
-      [disabled]="!editOrder.valid"
+      [disabled]="!OrderForm.valid"
       (click)="onSave($event)"
     >
       {{ isNew ? "Save" : "Update" }}

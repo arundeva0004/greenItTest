@@ -6,21 +6,45 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class NotificationService {
 
-  constructor(private toastr: ToastrService) { }
+  constructor(private toaster: ToastrService) { }
 
+  /**
+   * SHOW SUCCESS
+   * @param message
+   * @param title
+   * @return object
+   */
   showSuccess(message: string | undefined, title: string | undefined){
-    this.toastr.success(message, title)
+    this.toaster.success(message, title)
   }
 
+  /**
+   * SHOW ERROR
+   * @param message
+   * @param title
+   * @return object
+   */
   showError(message: string | undefined, title: string | undefined){
-    this.toastr.error(message, title)
+    this.toaster.error(message, title)
   }
 
+  /**
+   * SHOW INFO
+   * @param message
+   * @param title
+   * @return object
+   */
   showInfo(message: string | undefined, title: string | undefined){
-    this.toastr.info(message, title)
+    this.toaster.info(message, title)
   }
 
+  /**
+   * SHOW WARNING
+   * @param message
+   * @param title
+   * @return object
+   */
   showWarning(message: string | undefined, title: string | undefined){
-    this.toastr.warning(message, title)
+    this.toaster.warning(message, title)
   }
 }

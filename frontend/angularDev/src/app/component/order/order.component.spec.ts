@@ -10,14 +10,14 @@ import {HttpClient} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 
-describe('DashboardComponent', () => {
+describe('OrderComponent', () => {
 
   let component: OrderComponent;
   let fixture: ComponentFixture<OrderComponent>;
-  let apiService : OrderService;
+  let orderService : OrderService;
   let mockApiService : any;
-  let apiServiceSpy : jasmine.SpyObj<HttpClient>;
-  let CSV_RECORDS = [
+  let orderServiceSpy : jasmine.SpyObj<HttpClient>;
+  let ORDERS = [
     {id:"1",name:"Liquid Saffron",state:"NY",zip:"08998",amount:"25.43",qty:"7",item:"XCD45300"},
     {id:"2",name:"Mostly Slugs",state:"PA",zip:"19008",amount:"13.30",qty:"2",item:"AAH6748"},
     {id:"3",name:"Jump Stain",state:"CA",zip:"99388",amount:"56.00",qty:"3",item:"MKII4400"},
@@ -27,7 +27,7 @@ describe('DashboardComponent', () => {
   //arrange
   beforeEach(async () => {
 
-     apiServiceSpy = jasmine.createSpyObj( ['loadCSVData','addNewData','updateOrder','deleteData']);
+     orderServiceSpy = jasmine.createSpyObj( ['getAllOrders','newOrder','deleteOrder','updateOrder']);
     await TestBed.configureTestingModule({
       declarations: [OrderComponent],
       imports: [ HttpClientTestingModule,FormsModule,ReactiveFormsModule,
@@ -35,16 +35,16 @@ describe('DashboardComponent', () => {
       providers: [OrderService,
         NotificationService,
         {provide: ToastrService, useClass: ToastrService},
-        {provide: apiService, useValue: apiServiceSpy}
+        {provide: orderService, useValue: orderServiceSpy}
       ]
     })
       .compileComponents();
 
     //act
-    apiService =  TestBed.inject(OrderService);
+    orderService =  TestBed.inject(OrderService);
     fixture = TestBed.createComponent(OrderComponent);
     component = fixture.componentInstance;
-    apiServiceSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
+    orderServiceSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
 
     mockApiService = jasmine.createSpyObj(['loadCSVData','addNewData','updateOrder','deleteData'])
     //httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
@@ -57,50 +57,39 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should showForm value return false initially',() => {
-    //assert
-    expect(component.showForm).toBe(false);
-  });
-
-  it('should display form after detectChanges', () => {
-    component.showForm = true;
-    fixture.detectChanges(); // detect changes explicitly
-    expect(component.showForm).toBeTrue();
-  });
-
   it('should call ngOnInit', () => {
 
     //act
     const component = fixture.debugElement.componentInstance;
-    spyOn(component,"loadCSVData").and.returnValue([]);
+    spyOn(component,"getAllOrders").and.returnValue([]);
     component.ngOnInit();
 
     //assert
-    expect(component.loadCSVData).toBeTruthy();
+    expect(component.getAllOrders).toBeTruthy();
 
   })
 
-  it('should call loadCsvData and return all records', fakeAsync(  () => {
+  it('should call get all orders from csv file', fakeAsync(  () => {
 
     //act
-    spyOn(apiService,"getAllOrders").and.callFake(() => {
-      return of(CSV_RECORDS);
+    spyOn(orderService,"getAllOrders").and.callFake(() => {
+      return of(ORDERS);
     });
     component.getAllOrders();
 
     //assert
-    expect(component.gridData).toEqual(CSV_RECORDS);
+    expect(component.gridData).toEqual(ORDERS);
 
   }))
 
   it('Should call post method to add new data to csv file', () =>{
 
     //act
-    let newCsvData = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
+    let orderData = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
     spyOn(component,"newOrder").and.callFake(() => {
-      return of(newCsvData);
+      return of(orderData);
     });
-    component.newOrder(newCsvData);
+    component.newOrder(orderData);
 
     //assert
     expect(component.newOrder).toHaveBeenCalled();

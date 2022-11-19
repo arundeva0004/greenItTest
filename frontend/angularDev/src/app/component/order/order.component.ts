@@ -1,28 +1,20 @@
-import {Component, forwardRef, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {OrderService} from "../../service/order.service";
-import { Validators, FormGroup, FormControl} from '@angular/forms';
 import {NotificationService} from "../../service/notification.service";
 import {Order}  from "../../model/Order";
-import { Observable } from "rxjs";
 import {
-  GridComponent,
-  CancelEvent,
-  EditEvent,
-  GridDataResult,
   AddEvent,
-  RemoveEvent,
-  SaveEvent
+  RemoveEvent
 } from "@progress/kendo-angular-grid";
+import {Observable} from "rxjs";
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-order',
   templateUrl: './order.component.html',
   styleUrls: ['./order.component.css']
 })
 
 export class OrderComponent implements OnInit {
 
-  public showForm: boolean = false;
-  public OrderGridForm: boolean = false;
   public gridView: any = [];
   public gridData: any = [];
   public OrderGridFormGroup: any;
@@ -30,22 +22,16 @@ export class OrderComponent implements OnInit {
   public isNew: boolean = false;
   public active: boolean = false;
 
+  /**
+   * Constructor via inject the services
+   * @param orderService
+   * @param notifyService
+   */
   constructor(private orderService: OrderService, private notifyService: NotificationService) {
   }
 
-  //ORDER FORM GROUP
-  OrderForm = new FormGroup({
-    id: new FormControl('', [Validators.nullValidator]),
-    name: new FormControl('', [Validators.required]),
-    state: new FormControl('', [Validators.required]),
-    zip: new FormControl('', [Validators.required]),
-    amount: new FormControl('', [Validators.required]),
-    qty: new FormControl('', [Validators.required]),
-    item: new FormControl('', [Validators.required])
-  })
-
   ngOnInit(): void {
-    this.getAllOrders();
+    this.getAllOrders(); //GET ALL ORDERS
   };
 
   /* GET ALL ORDERS LIST */
@@ -60,13 +46,14 @@ export class OrderComponent implements OnInit {
   }
 
 
-  /*NEW ORDER */
+  /*@desc NEW ORDER
+  * @param formInput
+  * */
   newOrder(formInput : any) : void {
 
     let postData = formInput;
     postData.id = this.gridData.length + 1;
-    this.OrderForm.reset();
-    this.showForm = false;
+    this.isNew = this.active = false;
     this.orderService.newOrder(postData).subscribe( (res )  => {
         this.notifyService.showSuccess("Order added successfully", "Order");
         this.getAllOrders();
@@ -78,10 +65,14 @@ export class OrderComponent implements OnInit {
 
   }
 
-  // DELETE ORDER
+  /**
+   * @desc DELETE ORDER
+   * @param args
+   @return object
+   */
   public deleteOrder(args: RemoveEvent): void {
 
-    let postData = args.dataItem;
+    let postData = args.dataItem;//ASSIGN ORDER DATA
     this.orderService.deleteOrder(postData).subscribe((res) => {
         this.notifyService.showSuccess("Deleted order successfully !!", "Order");
         this.getAllOrders();
@@ -93,31 +84,43 @@ export class OrderComponent implements OnInit {
     )
   }
 
-  //ADD ORDER AND SHOW POP UP
+  /**
+   * @desc ADD ORDER AND RENDER POP-UP
+   * @param
+   * @return object
+   */
   public addOrder(): void {
     this.editOrderItem = null;
     this.isNew = true;
     this.active = true;
+
   }
 
-  //EDIT ORDER
+  /**
+   * DELETE ORDER AND RENDER POP-UP
+   * @param order
+   */
   public editOrder(order: AddEvent): void {
-    this.editOrderItem = order.dataItem;
+    this.editOrderItem = order.dataItem;//ASSIGN ORDER DATA
     this.isNew = false;
     this.active = true;
   }
 
-  //CANCEL ORDER
+  /**
+   * @desc CLOSE THE POP-UP
+   * @param args
+   */
   public cancelOrder(args: any): void {
     this.editOrderItem = undefined;
   }
 
-  /* UPDATE THE ORDER */
+  /* @desc UPDATE THE ORDER
+  *  @param orderInput
+  * */
   public updateOrder(orderInput: any): void {
 
     let postData = orderInput;
-    this.OrderForm.reset();
-    this.isNew = this.showForm = this.active = false;
+    this.isNew = this.active = false;
 
     this.orderService.updateOrder(postData).subscribe( (res )  => {
 

@@ -16,9 +16,11 @@ export class EditOrderComponent {
   }
 
   public editData : any;
-  public editOrder: FormGroup = new FormGroup({
-    name: this.fb.control('',[Validators.required, Validators.pattern("^[a-zA-Z0-9]+[a-zA-Z0-9_\\s.]*$")]),
-    item: this.fb.control("", [Validators.required, Validators.pattern("^[a-zA-Z0-9]+[a-zA-Z0-9_\\s.]*$")]),
+
+  //ORDER FORM
+  public OrderForm: FormGroup = new FormGroup({
+    name: this.fb.control('',[Validators.required, Validators.pattern("^[a-zA-Z]+[a-zA-Z_\\s.]*$")]),
+    item: this.fb.control("", [Validators.required, Validators.pattern("^[a-zA-Z]+[a-zA-Z_\\s.]*$")]),
     amount: this.fb.control("", [Validators.required, Validators.pattern("^[0-9.]*$")]),
     qty: this.fb.control("", [Validators.required, Validators.pattern("^[0-9]*$")]),
     state: this.fb.control("", [Validators.required, Validators.pattern("^[a-zA-Z0-9]+[a-zA-Z0-9_\\s.]*$")]),
@@ -28,39 +30,58 @@ export class EditOrderComponent {
   @Input() public isNew = false;
   @Input() public active = false;
 
+  /**
+   * SET ORDER DATA TO THE FORM
+   * @param order
+   */
   @Input() public set model(order: Order) {
     this.editData = order;
-    if(this.editData !=  null) this.editOrder.reset(order);
+    if(!this.isNew && this.editData !== null){
+      this.OrderForm.reset(order);
+    } else {
+      this.OrderForm.reset();
+    }
     // toggle the Dialog visibility
     this.active = order !== undefined;
   }
 
-
+  //EMIT THE DATA TO PARENT COMPONENT
   @Output() cancel: EventEmitter<undefined> = new EventEmitter();
   @Output() save: EventEmitter<Order> = new EventEmitter();
   @Output() update: EventEmitter<Order> = new EventEmitter();
   ngOnInit(): void {
   };
 
+  /**
+   * @desc SAVE ORDER
+   * @param e
+   */
   public onSave(e: PointerEvent): void {
 
     e.preventDefault();
-    if(this.editData != null){
-      const orderInput = this.editOrder.value;
+    if(!this.isNew){
+      const orderInput = this.OrderForm.value;
       orderInput.id = this.editData.id;
       this.update.emit(orderInput);
     } else {
-      this.save.emit(this.editOrder.value);
+      this.save.emit(this.OrderForm.value);
     }
 
     this.active = false;
   }
 
+  /**
+   * @desc CANCEL THE ORDER
+   * @param e
+   */
   public onCancel(e: PointerEvent): void {
     e.preventDefault();
     this.closeForm();
   }
 
+  /**
+   * CLOSE THE POP-UP
+   */
   public closeForm(): void {
     this.active = false;
     this.cancel.emit();

@@ -7,12 +7,7 @@ if(isset($_SERVER['REQUEST_METHOD'])){
 }
 if(file_exists('OrderLog.php')) require_once "OrderLog.php";
 
-interface OrderInterface {
-    function getAllOrders($listRecords);
-    function newOrderToCSVFile($inputData);
-    function updateOrderToCSVFile($postData);
-    function deleteOrderFromCsvFile($postData);
-}
+if(file_exists('OrderInterface.php')) require_once "OrderInterface.php";
 
 
 class OrderController implements OrderInterface
@@ -43,6 +38,7 @@ class OrderController implements OrderInterface
         try{
 
             $this->logWrite('*****getAllCsvRecords - Starts ******');
+
             if (($open = fopen(OrderController::CSV_FILE_PATH, "r")) !== FALSE)
             {
                 $dataArray =[];
@@ -120,13 +116,14 @@ class OrderController implements OrderInterface
             $this->logWrite('OrderController::addNewRowToCSVFile - Error File - ' . $e->getFile());
             $this->logWrite('OrderController::addNewRowToCSVFile - Error Line - ' . $e->getLine());
             http_response_code('403');
+            header("Content-type: application/json; charset=UTF-8");
             echo json_encode(['title' => 'Error', 'description' =>  $e->getMessage()], true);
         }
     }
 
     /*
-     @description To update given row information to the csv file
-     @postData $postData from input data for new row
+     @description UPDATE ORDER TO CSV FILE
+     @postData $postData
      */
     public function updateOrderToCSVFile($postData)
     {
@@ -150,7 +147,10 @@ class OrderController implements OrderInterface
 
     }
 
-    /*remove row from csv file */
+    /*
+        @desc DELETE THE ORDER FROM CSV FILE
+        @param postData
+    */
     public function deleteOrderFromCsvFile($postData)
     {
         try{
@@ -178,7 +178,7 @@ class OrderController implements OrderInterface
         }
     }
 
-    /* value added quotes logic */
+    /* VALUE ADDED QUOTES LOGIC */
     public function push(&$data, $item) {
         $quote = chr(34); // quotes
         $data[] = $quote . addslashes($item) . $quote;
@@ -186,22 +186,24 @@ class OrderController implements OrderInterface
     }
 
     /*
-        @updateCSVFile class is basically get the lists of records from
-            the csv file then update or remove to csv file
-        @postData is updated or deleted row
-        @type is used to get user action
+        @desc UPDATE THE ORDER TO CSV FILE
+        @param postData
+        @param type
     */
     public function updateCSVFile($postData, $type){
         try{
-            $i = 0;
+
+           $i = 0;
             $newData = [];
             $handle = fopen(self::CSV_FILE_PATH, "r");
 
             // READ CSV
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 
+                $this->logWrite('delete-id' . $postData['id']);
+                $this->logWrite('index' . $i);
                 // UPDATE BASED ON SPECIFIC ID ROW
-                if($i == $postData['id']) {
+                if($data[0] == $postData['id']) {
                     if ($type == self::CSV_FILE_UPDATE) {//Update
                         $this->push($newData[$i], $postData['id']);
                         $this->push($newData[$i], $postData['name']);
@@ -218,6 +220,7 @@ class OrderController implements OrderInterface
                         }
                 }
 
+                //ADD ORDERS TO newData VARIABLE
                 $this->push($newData[$i], $data[0]);
                 $this->push($newData[$i], $data[1]);
                 $this->push($newData[$i], $data[2]);
@@ -228,14 +231,22 @@ class OrderController implements OrderInterface
                 $i++;
             }
 
+
+            $this->logWrite('count-new data' . (count($newData)));
+            //ADD COMMA SEPARATOR AND NEWLINE FOR EACH ORDER
             $new_string = '';
-            foreach ($newData as  $row ) {
+            foreach (array_values($newData) as $key => $row ) {
                 foreach ($row as $row_key => $each_element){
                     $new_string .=  $each_element;
                     if($row_key != count($row)-1)
                         $new_string .=  ',';
                 }
-                $new_string .= "\n";
+
+                $this->logWrite('key-delete' . $key);
+               if((count($newData)-1) != $key){
+                   $this->logWrite('key-append new line' . $key);
+                   $new_string .= "\n";
+               }
             }
 
             $myfile = fopen(self::CSV_FILE_PATH, "w") or die("Unable to open file!");
@@ -259,21 +270,22 @@ class OrderController implements OrderInterface
     */
     public function formDataValidations($postData, $errors){
 
-        // define variables to empty values
+        // DEFINE VARIABLES TO EMPTY VALUES
         $nameErr = $itemErr = $amountErr = $qtyErr = $stateErr = $zipErr = "";
 
-        //String Validation
+        //STRING VALIDATION
         if (empty($postData["name"])) {
             $nameErr = "Name is required";
         } else {
             $name = $postData["name"];
 
-            // check if name only contains letters and whitespace
+            // CHECK IF NAME ONLY CONTAINS LETTERS AND WHITESPACE
             if (!preg_match("/^[a-zA-Z ]*$/",$name)) {
                 $nameErr = "Only alphabets and white space are allowed in name field";
             }
         }
 
+        //APPEND THE ERROR MESSAGE
         if(!empty($nameErr)){
             $errors  .= $nameErr;
         }
@@ -282,12 +294,13 @@ class OrderController implements OrderInterface
             $itemErr = "Item is required";
         } else {
 
-            // check if item only contains letters and whitespace
+            // CHECK IF ITEM ONLY CONTAINS LETTERS AND WHITESPACE
             if (!preg_match("/^[a-zA-Z ]/",$postData["item"])) {
                 $itemErr = "Only alphabets and white space are allowed item field";
             }
         }
 
+        //APPEND THE ERROR MESSAGE
         if(!empty($itemErr)){
            if(!empty($errors)){
                $errors  .= " , " . $itemErr;
@@ -300,14 +313,15 @@ class OrderController implements OrderInterface
             $stateErr = "State is required";
         } else {
 
-            // check if state only contains letters and whitespace and
+            // CHECK IF STATE ONLY CONTAINS LETTERS AND WHITESPACE
             if (!preg_match("/^[a-zA-Z ]/",$postData["state"])) {
                 $stateErr = "Only alphabets and white space are allowed state field";
             }
         }
 
+        //APPEND THE ERROR MESSAGE
         if(!empty($stateErr)){
-            if(!empty($stateErr)){
+            if(!empty($errors)){
                 $errors  .= " , " . $stateErr;
             }  else{
                 $errors  .= $stateErr;
@@ -318,33 +332,35 @@ class OrderController implements OrderInterface
             $zipErr = "Zip is required";
         } else {
 
-            // check if zip only contains letters and whitespace
+            // CHECK IF ZIP ONLY CONTAINS LETTERS AND WHITESPACE
             if (!preg_match("/[0-9]+/", $postData["zip"])) {
                 $zipErr = "Only alphabets and white space  and numbers are allowed zip field";
             }
         }
 
+        //APPEND THE ERROR MESSAGE
         if(!empty($zipErr)){
-            if(!empty($zipErr)){
+            if(!empty($errors)){
                 $errors  .= " , " . $zipErr;
             }  else{
                 $errors  .= $zipErr;
             }
         }
 
-        //Number  validations
+        //NUMBER  VALIDATIONS
         if (empty($postData["qty"])) {
             $qtyErr = "Quantity is required";
         } else {
 
-            // It will allow all numeric values and decimal points.
+            // IT WILL ALLOW ALL NUMERIC VALUES AND DECIMAL POINTS.
             if (!is_numeric($postData["qty"])){
                 $qtyErr = "Only allowed numeric value in qty field";
             }
         }
 
+        //APPEND THE ERROR MESSAGE
         if(!empty($qtyErr)){
-            if(!empty($qtyErr)){
+            if(!empty($errors)){
                 $errors  .= " , " . $qtyErr;
             }  else{
                 $errors  .= $qtyErr;
@@ -352,18 +368,19 @@ class OrderController implements OrderInterface
         }
 
 
-        //decimal value validations
+        //DECIMAL VALUE VALIDATIONS
         if (empty($postData["amount"])) {
             $amountErr = "Amount is required";
         } else {
-            // It will allow all numeric values and decimal points.
+            // IT WILL ALLOW ALL NUMERIC VALUES AND DECIMAL POINTS.
             if (!preg_match('/[0-9.]+/', $postData["amount"])){
                 $amountErr = "Only allowed decimal value in amount field";
             }
         }
 
+        //APPEND THE ERROR MESSAGE
         if(!empty($amountErr)){
-            if(!empty($amountErr)){
+            if(!empty($errors)){
                 $errors  .= " , " . $amountErr;
             }  else{
                 $errors  .= $amountErr;
@@ -379,40 +396,43 @@ class OrderController implements OrderInterface
     }
 }
 
-
+/* @desc OrderController Initialization
+ * */
 function OrderInit(){
 
-    // initialize CsvLog object
-    $file_content = new OrderController(); //initialize object
-    $errors = ""; //post data errors
-    $postData = json_decode(file_get_contents('php://input'), true); // get request input data
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $order = new OrderController(); //INITIALIZE ORDER CONTROLLER
+    $errors = ""; //POST DATA ERRORS
+    $postData = json_decode(file_get_contents('php://input'), true); // GET REQUEST INPUT DATA
 
-        $errors =  $file_content->formDataValidations($postData, $errors);
+    //POST OR PUT REQUEST
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT') {
+
+        //VALIDATE FORM INPUTS
+        $errors =  $order->formDataValidations($postData, $errors);
         if(!empty($errors)){
             echo $errors;
             http_response_code('403');
             exit;
         }
-        $file_content->newOrderToCSVFile($postData);
+
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            //CREATE A NEW ORDER
+            $order->newOrderToCSVFile($postData);
+        } else if($_SERVER['REQUEST_METHOD'] === 'PUT'){
+            //UPDATE ORDER TO CSV FILE
+            $order->updateOrderToCSVFile($postData);
+        }
 
     } else if($_SERVER['REQUEST_METHOD'] === 'GET'){
-        $file_content->getAllOrders();
-    } else if($_SERVER['REQUEST_METHOD'] === 'PUT'){
-        $errors =  $file_content->formDataValidations($postData, $errors);
-        if(!empty($errors)){
-            http_response_code('403');
-            echo $errors;
-            exit;
-        }
-        $file_content->updateOrderToCSVFile($postData);
+        //GET ALL ORDERS
+        $order->getAllOrders();
     } else if($_SERVER['REQUEST_METHOD'] === 'DELETE'){
-
-        $file_content->deleteOrderFromCsvFile($postData);
+        //DELETE THE ORDER
+        $order->deleteOrderFromCsvFile($postData);
     }
 }
 
-if(isset($_SERVER['REQUEST_METHOD'])) OrderInit();
+if(isset($_SERVER['REQUEST_METHOD'])) OrderInit(); // FUNCTION CALL
 
 
 

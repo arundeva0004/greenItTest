@@ -13,22 +13,22 @@ class OrderTest extends TestCase{
         $this->assertTrue(true);
     }
 
-    /*Checking file exist or not */
+    /* @desc CHECKING FILE EXIST OR NOT */
     public function testFileExist(){
-        $this->assertFileExists(self::CSV_FILE_PATH . "\OrderDetails.csv");
+        $this->assertFileExists(self::CSV_FILE_PATH . "\OrderItems.csv");
     }
 
-    /*Check given directory is writable or not */
+    /* @desc CHECK GIVEN DIRECTORY IS WRITABLE OR NOT */
     public function testDirectoryIsWritable(){
         $this->assertDirectoryIsWritable(self::CSV_FILE_PATH, "directory path either doesn't exists or not writable");
     }
 
-    /*Check given directory is readable or not */
+    /* @desc CHECK GIVEN DIRECTORY IS READABLE OR NOT */
     public function testDirectoryIsReadable(){
         $this->assertDirectoryIsReadable(self::CSV_FILE_PATH,"directory path either doesn't exists or not readable");
     }
 
-    /*get all csv records from the csv file*/
+    /* @desc GET ALL CSV RECORDS FROM THE CSV FILE */
     public function testGetAllOrders(){
 
         $this->assertEquals([
@@ -36,7 +36,7 @@ class OrderTest extends TestCase{
                 "id" => "1",
                 "name" => "Liquid Saffron",
                 "state"=> "NY",
-                "zip" => "08998",
+                "zip" => "089989",
                 "amount" => "25.43",
                 "qty" => "7",
                 "item" => "XCD45300"
@@ -53,7 +53,7 @@ class OrderTest extends TestCase{
 
             [
                 "id" => "3",
-                "name" => "Jump Stain",
+                "name" => "Jump Stalin",
                 "state"=> "CA",
                 "zip" => "99388",
                 "amount" => "56.00",
@@ -68,23 +68,14 @@ class OrderTest extends TestCase{
                 "amount" => "987.56",
                 "qty" => "1",
                 "item" => "TR909"
-            ],
-            [
-                "id" => "5",
-                "name" => "Virat Kohli",
-                "state"=> "WA",
-                "zip" => "88990",
-                "amount" => "987.56",
-                "qty" => "1",
-                "item" => "TR909"
             ]
             ], $this->getOrderController()->getAllOrders(), "Csv file records doesn't match with specified array");
     }
 
-    /*Add new data to csv file */
+    /* @desc ADD NEW ORDER TO CSV FILE */
     public function testAddOrder()
     {
-        $newArray = [
+        $newOrder = [
             "id" => "6",
             "name" => "Rishabh Pant",
             "state"=> "WA",
@@ -93,12 +84,12 @@ class OrderTest extends TestCase{
             "qty" => "1",
             "item" => "TN5125"
         ];
-        $this->assertCount(7, $newArray);
-        $this->getOrderController()->addOrderToCSVFile($newArray);
-        $this->assertContains($newArray, $this->getOrderController()->getAllOrders(),"New data is not contains the csv file");
+        $this->assertCount(7, $newOrder);
+        $this->getOrderController()->newOrderToCSVFile($newOrder);
+        $this->assertContains($newOrder, $this->getOrderController()->getAllOrders(),"New data is not contains the csv file");
     }
 
-    /*update the csv data*/
+    /* @desc UPDATE ORDER TO CSV FILE*/
     public function testUpdateData(){
         $updateArray = [
             "id" => "3",
@@ -113,10 +104,10 @@ class OrderTest extends TestCase{
         $this->assertContains($updateArray, $this->getOrderController()->getAllOrders(),"There was problem while updating your data");
     }
 
-    /*update the  data from csv file */
+    /* @desc UPDATE THE  DATA FROM CSV FILE */
     public function testRemoveData(){
 
-        $removeArray = [
+        $removeOrder = [
             "id" => "6",
             "name" => "Rishabh Pant",
             "state"=> "WA",
@@ -126,13 +117,13 @@ class OrderTest extends TestCase{
             "item" => "TN5125"
         ];
 
-        $this->assertIsArray($removeArray);
-        $result = $this->getOrderController()->removeOrderFromCsvFile($removeArray);
+        $this->assertIsArray($removeOrder);
+        $result = $this->getOrderController()->deleteOrderFromCsvFile($removeOrder);
         $this->assertJson($result);
-        $this->assertNotContains($removeArray, $this->getOrderController()->getAllOrders(),"There was problem removing your data");
+        $this->assertNotContains($removeOrder, $this->getOrderController()->getAllOrders(),"There was problem removing your data");
     }
 
-    /*validate the post data */
+    /* @desc VALIDATE THE POST DATA */
     public function testPostDataValidate(){
         $postData = [
             "id" => "7",
@@ -148,7 +139,9 @@ class OrderTest extends TestCase{
 
     }
 
-    public function getOrderController(){
+    /* @desc  SET ORDER CONTROLLER*/
+    public function getOrderController(): OrderController
+    {
         if($this->orderController == null){
             $this->orderController = new OrderController();
         }

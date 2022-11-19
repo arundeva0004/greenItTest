@@ -1,18 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { OrderService } from './order.service';
-import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ToastrModule} from 'ngx-toastr';
 import {of} from "rxjs";
-
 
 describe('ApiService', () => {
 
   let apiService: OrderService;
   let httpClientSpy : jasmine.SpyObj<HttpClient>;
 
-  //Mock CSV Data
-  let CSV_RECORDS = [
+  //MOCK CSV DATA
+  let ORDERS = [
     {id:"1",name:"Liquid Saffron",state:"NY",zip:"08998",amount:"25.43",qty:"7",item:"XCD45300"},
     {id:"2",name:"Mostly Slugs",state:"PA",zip:"19008",amount:"13.30",qty:"2",item:"AAH6748"},
     {id:"3",name:"Jump Stain",state:"CA",zip:"99388",amount:"56.00",qty:"3",item:"MKII4400"},
@@ -46,7 +45,7 @@ describe('ApiService', () => {
   it("Should return an expected list of csv records from the file",(done : DoneFn)=>{
 
     //act
-    httpClientSpy.get.and.returnValue(of(CSV_RECORDS));
+    httpClientSpy.get.and.returnValue(of(ORDERS));
     apiService.getAllOrders().subscribe({
       next : (result) => {
         //assert
@@ -63,10 +62,10 @@ describe('ApiService', () => {
 
   });
 
-  it("Should create a new data", (done : DoneFn)=>{
+  it("Should create a new order", (done : DoneFn)=>{
 
     //act
-    let newCsvData = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
+    let newCsvData : any = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
 
     httpClientSpy.post.and.returnValue(of(newCsvData));
     apiService.newOrder(newCsvData).subscribe({
@@ -86,17 +85,16 @@ describe('ApiService', () => {
   });
 
 
-  it("Should update a csv data with given row id", (done : DoneFn)=>{
+  it("Should update the order", (done : DoneFn)=>{
 
     //act
-    let updateData = CSV_RECORDS[3];
+    let updateData = ORDERS[3];
     updateData.name = "M Karunanidhi Stalin";
 
     httpClientSpy.put.and.returnValue(of(updateData));
-    apiService.onUpdate(updateData).subscribe({
+    apiService.updateOrder(updateData).subscribe({
       next : (result) => {
 
-        // @ts-ignore
         //assert
         expect(result.name).toEqual("M Karunanidhi Stalin");
         done();
@@ -108,31 +106,6 @@ describe('ApiService', () => {
     })
 
     expect(httpClientSpy.put).toHaveBeenCalledTimes(1);
-  });
-
-  it("Should delete an data given row id", (done : DoneFn)=>{
-
-    //act
-    let deleteCsvData = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
-
-    httpClientSpy.delete.and.returnValue(of(new HttpResponse ({
-      status: 200
-    })));
-
-    apiService.deleteOrder(deleteCsvData).subscribe({
-      next : (result) => {
-
-        //assert
-        expect(result.status).toEqual(200);
-        done();
-      },
-      error : () =>{
-        done.fail;
-      }
-    })
-
-    //assert
-    expect(httpClientSpy.delete).toHaveBeenCalledTimes(1);
   });
 
 });

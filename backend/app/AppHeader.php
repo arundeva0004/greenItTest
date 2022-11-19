@@ -1,11 +1,11 @@
 <?php
 
-/* Set header configurations */
+/* SET HEADER CONFIGURATIONS */
 header('Access-Control-Allow-Headers: Access-Control-Allow-Origin, Content-Type');
-/* This will allow any request comes from any origin */
+/* THIS WILL ALLOW ANY REQUEST COMES FROM ANY ORIGIN */
 header('Access-Control-Allow-Origin: *');
 header('application/x-www-form-urlencoded');
-/* Collect input data from browser request and which type of content*/
+/* COLLECT INPUT DATA FROM BROWSER REQUEST AND WHICH TYPE OF CONTENT*/
 header('Content-Type: application/json, charset=utf-8');
-/*It will allow any GET, POST, or OPTIONS requests from any origin. */
+/*IT WILL ALLOW ANY GET, POST, OR OPTIONS REQUESTS FROM ANY ORIGIN. */
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
