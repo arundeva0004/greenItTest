@@ -5,12 +5,12 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ToastrModule} from 'ngx-toastr';
 import {of} from "rxjs";
 
-describe('ApiService', () => {
+describe('OrderService', () => {
 
-  let apiService: OrderService;
+  let orderService: OrderService;
   let httpClientSpy : jasmine.SpyObj<HttpClient>;
 
-  //MOCK CSV DATA
+  //MOCK ORDERS DATA
   let ORDERS = [
     {id:"1",name:"Liquid Saffron",state:"NY",zip:"08998",amount:"25.43",qty:"7",item:"XCD45300"},
     {id:"2",name:"Mostly Slugs",state:"PA",zip:"19008",amount:"13.30",qty:"2",item:"AAH6748"},
@@ -30,7 +30,7 @@ describe('ApiService', () => {
     });
 
     //act
-    apiService = TestBed.inject(OrderService);
+    orderService = TestBed.inject(OrderService);
     httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
 
   });
@@ -38,7 +38,7 @@ describe('ApiService', () => {
 
   it('Should be created api service', () => {
     //assert
-    expect(apiService).toBeTruthy();
+    expect(orderService).toBeTruthy();
   });
 
 
@@ -46,7 +46,7 @@ describe('ApiService', () => {
 
     //act
     httpClientSpy.get.and.returnValue(of(ORDERS));
-    apiService.getAllOrders().subscribe({
+    orderService.getAllOrders().subscribe({
       next : (result) => {
         //assert
         expect(result.length).toBe(4);
@@ -68,7 +68,7 @@ describe('ApiService', () => {
     let newCsvData : any = {id:"5",name:"Hardik Pandya",state:"MI",zip:"78262",amount:"150.75", qty:"7", item:"YCS79282" };
 
     httpClientSpy.post.and.returnValue(of(newCsvData));
-    apiService.newOrder(newCsvData).subscribe({
+    orderService.newOrder(newCsvData).subscribe({
       next : (result) => {
         //assert
         expect(result).toEqual(newCsvData);
@@ -92,7 +92,7 @@ describe('ApiService', () => {
     updateData.name = "M Karunanidhi Stalin";
 
     httpClientSpy.put.and.returnValue(of(updateData));
-    apiService.updateOrder(updateData).subscribe({
+    orderService.updateOrder(updateData).subscribe({
       next : (result) => {
 
         //assert

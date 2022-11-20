@@ -6,7 +6,7 @@ import {
   AddEvent,
   RemoveEvent
 } from "@progress/kendo-angular-grid";
-import {Observable} from "rxjs";
+
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html',
