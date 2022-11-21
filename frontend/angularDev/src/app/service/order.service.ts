@@ -4,6 +4,7 @@ import { Observable, catchError, throwError } from  'rxjs';
 import {Order} from "../model/Order";
 import {response} from "../model/response";
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,6 +61,17 @@ export class OrderService {
     );
   }
 
+  /**
+   * DELETE MULTIPLE ORDER FROM A CSV FILE
+   * @returns
+   * @param data
+   */
+  deleteMultipleOrder(data: object) : Observable<response> {
+    let body= JSON.stringify(data);
+    return this.httpClient.delete<response>(this.PHP_API_SERVER + 'OrderController.php',{body}).pipe(
+      catchError(this.errorHandler)
+    );
+  }
 
   /**
    * Errors handler

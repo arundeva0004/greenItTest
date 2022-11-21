@@ -17,6 +17,7 @@ export class OrderComponent implements OnInit {
 
   public gridView: any = [];
   public gridData: any = [];
+  public orderSelectedRow: any = [];
   public OrderGridFormGroup: any;
   public editOrderItem: any = null;
   public isNew: boolean = false;
@@ -36,13 +37,18 @@ export class OrderComponent implements OnInit {
 
   /* GET ALL ORDERS LIST */
   getAllOrders(): void {
-    this.orderService.getAllOrders().subscribe((data: object) => {
+    this.orderService.getAllOrders().subscribe({
+      next: (data: object) => {
         this.gridData = data;
       },
-      (err) => {
+      error: err => {
         this.gridData = [];
         this.notifyService.showError("Failed to load orders!!", "Order");
-      });
+      },
+      complete: () => {
+
+      }
+    })
   }
 
 
@@ -54,15 +60,18 @@ export class OrderComponent implements OnInit {
     let postData = formInput;
     postData.id = this.gridData.length + 1;
     this.isNew = this.active = false;
-    this.orderService.newOrder(postData).subscribe( (res )  => {
+    this.orderService.newOrder(postData).subscribe( {
+      next: (data: any) => {
         this.notifyService.showSuccess("Order added successfully", "Order");
         this.getAllOrders();
       },
-      (err) => {
+      error: err => {
         this.notifyService.showError(err.error, "Order");
-      }
-    )
+      },
+      complete: () => {
 
+      }
+    })
   }
 
   /**
@@ -73,15 +82,19 @@ export class OrderComponent implements OnInit {
   public deleteOrder(args: RemoveEvent): void {
 
     let postData = args.dataItem;//ASSIGN ORDER DATA
-    this.orderService.deleteOrder(postData).subscribe((res) => {
+    this.orderService.deleteOrder(postData).subscribe({
+      next: (data: any) => {
         this.notifyService.showSuccess("Deleted order successfully !!", "Order");
         this.getAllOrders();
       },
-      (err) => {
+      error: err => {
         this.getAllOrders();
         this.notifyService.showError("Failed to delete order!!", "Order");
+      },
+      complete: () => {
+
       }
-    )
+    })
   }
 
   /**
@@ -122,15 +135,49 @@ export class OrderComponent implements OnInit {
     let postData = orderInput;
     this.isNew = this.active = false;
 
-    this.orderService.updateOrder(postData).subscribe( (res )  => {
-
+    this.orderService.updateOrder(postData).subscribe({
+      next: (data: any) => {
         this.notifyService.showSuccess("Order updated successfully", "Order");
         this.getAllOrders();
       },
-      (err) => {
+      error: err => {
         this.notifyService.showError(err.error, "Order");
+      },
+      complete: () => {
+
       }
-    )
+    })
+  }
+
+  /* @desc Delete Multiple Order
+  * */
+  public deleteMultipleOrder(){
+
+    //We shouldn't allow to delete all the records
+    if(this.gridData.length == this.orderSelectedRow.length){
+      this.notifyService.showWarning("We should not allow to delete all the orders!!", "Order");
+    } else {
+      const postData = {
+        selected_rows : this.orderSelectedRow,
+        multiple_order_delete : true
+      }
+
+      this.orderService.deleteMultipleOrder(postData).subscribe({
+          next: (data: any) => {
+            this.notifyService.showSuccess("Deleted order successfully !!", "Order");
+            this.getAllOrders();
+            this.orderSelectedRow = [];
+          },
+          error: err => {
+            this.getAllOrders();
+            this.notifyService.showError("Failed to delete order!!", "Order");
+            this.orderSelectedRow = [];
+          },
+          complete: () => {
+
+          }
+        })
+    }
   }
 
 }

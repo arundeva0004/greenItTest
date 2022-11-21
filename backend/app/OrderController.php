@@ -155,13 +155,45 @@ class OrderController implements OrderInterface
     {
         try{
 
-            $this->logWrite('*****updateRowToCSVFile - Starts ******');
+            $this->logWrite('*****deleteOrderFromCsvFile - Starts ******');
 
             $this->updateCSVFile($postData, self::CSV_FILE_DELETE);
             http_response_code('200');
             $response = json_encode(['title' => 'Success', 'description' => "Data deleted successfully"], true);
 
-            $this->logWrite('*****updateRowToCSVFile - Ends ******');
+            $this->logWrite('*****deleteOrderFromCsvFile - Ends ******');
+
+            if(isset($_SERVER['REQUEST_METHOD'])) {
+                echo $response;
+            } else {
+                return $response;
+            }
+
+        } catch (Exception $e){
+            $this->logWrite('OrderController::removeRowFromCsvFile - Error Message - ' . $e->getMessage());
+            $this->logWrite('OrderController::removeRowFromCsvFile - Error File - ' . $e->getFile());
+            $this->logWrite('OrderController::removeRowFromCsvFile - Error Line - ' . $e->getLine());
+            http_response_code('403');
+            echo json_encode(['title' => 'Error', 'description' => $e->getMessage()], true);
+        }
+    }
+
+
+    /*
+        @desc DELETE THE ORDER FROM CSV FILE
+        @param postData
+    */
+    public function deleteMultipleOrder($postData)
+    {
+        try{
+
+            $this->logWrite('*****deleteMultipleOrder - Starts ******');
+
+            $this->updateCSVFile($postData, self::CSV_FILE_DELETE);
+            http_response_code('200');
+            $response = json_encode(['title' => 'Success', 'description' => "Data deleted successfully"], true);
+
+            $this->logWrite('*****deleteMultipleOrder - Ends ******');
 
             if(isset($_SERVER['REQUEST_METHOD'])) {
                 echo $response;
@@ -200,11 +232,20 @@ class OrderController implements OrderInterface
             // READ CSV
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 
-                $this->logWrite('delete-id' . $postData['id']);
-                $this->logWrite('index' . $i);
+                $orderId = null;
+                if(isset($postData['multiple_order_delete'])){
+                    //MULTI SELECTED DELETE
+                    $key = array_search($data[0],$postData['selected_rows']);
+                    $orderId = $postData['selected_rows'][$key];
+                } else if(isset($postData['id'])){
+                    $orderId = $postData['id'];
+                }
+
+
                 // UPDATE BASED ON SPECIFIC ID ROW
-                if($data[0] == $postData['id']) {
-                    if ($type == self::CSV_FILE_UPDATE) {//Update
+                if($data[0] == $orderId) {
+
+                    if ($type == self::CSV_FILE_UPDATE && isset($postData['id'])) {//Update
                         $this->push($newData[$i], $postData['id']);
                         $this->push($newData[$i], $postData['name']);
                         $this->push($newData[$i], $postData['state']);
@@ -427,8 +468,15 @@ function OrderInit(){
         //GET ALL ORDERS
         $order->getAllOrders();
     } else if($_SERVER['REQUEST_METHOD'] === 'DELETE'){
-        //DELETE THE ORDER
-        $order->deleteOrderFromCsvFile($postData);
+
+        if(isset($postData['multiple_order_delete'])){
+            //DELETE MULTIPLE THE ORDER
+            $order->deleteMultipleOrder($postData);
+        } else {
+            //DELETE THE ORDER
+            $order->deleteOrderFromCsvFile($postData);
+        }
+
     }
 }
 

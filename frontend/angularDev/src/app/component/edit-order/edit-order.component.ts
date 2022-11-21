@@ -20,15 +20,16 @@ export class EditOrderComponent {
   //ORDER FORM
   public OrderForm: FormGroup = new FormGroup({
     name: this.fb.control('',[Validators.required, Validators.pattern("^[a-zA-Z]+[a-zA-Z_\\s.]*$")]),
-    item: this.fb.control("", [Validators.required, Validators.pattern("^[a-zA-Z]+[a-zA-Z_\\s.]*$")]),
+    item: this.fb.control("", [Validators.required, Validators.pattern("^[a-zA-Z0-9]+[a-zA-Z_\\s.]*$")]),
     amount: this.fb.control("", [Validators.required, Validators.pattern("^[0-9.]*$")]),
     qty: this.fb.control("", [Validators.required, Validators.pattern("^[0-9]*$")]),
     state: this.fb.control("", [Validators.required, Validators.pattern("^[a-zA-Z0-9]+[a-zA-Z0-9_\\s.]*$")]),
     zip: this.fb.control("", [Validators.required, Validators.pattern("^[0-9]*$")]),
   });
 
-  @Input() public isNew = false;
-  @Input() public active = false;
+
+  @Input() public isNew = false;//CREATE OR
+  @Input() public active = false;//POP-UP
 
   /**
    * SET ORDER DATA TO THE FORM

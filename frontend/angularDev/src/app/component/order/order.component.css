@@ -1,5 +1,6 @@
 
 .m-r-5 {margin-right : 5px;}
+.m-t-5 {margin-top : 5px;}
 .m-r-10 {margin-right : 10px;}
 .m-t-10 {margin-top : 10px;}
 .m-b-10 {margin-bottom : 10px;}
@@ -30,3 +31,5 @@ input{ width: 80%}
 th.headerCustomClass {
   text-align: right;
 }
+
+.button_right { position:absolute; right:15px; }

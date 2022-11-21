@@ -19,14 +19,33 @@
           filterable="menu"
           [resizable]="true"
           [height]="450"
+
+          [selectable]="{ checkboxOnly: true, mode: 'multiple' }"
+          [(selectedKeys)]="orderSelectedRow"
+          kendoGridSelectBy="id"
+
           (edit)="editOrder($event)"
           (cancel)="cancelOrder($event)"
           (remove)="deleteOrder($event)"
-          (add)="addOrder()"
         >
           <ng-template kendoGridToolbarTemplate>
-            <button kendoGridAddCommand>New Order</button>
+            <button class="btn btn-outline-primary" (click)="addOrder()">
+              <i class="bi bi-plus-circle-fill m-t-5 m-r-5"></i>
+              New Order
+            </button>
+            <button [disabled]="orderSelectedRow.length == 0" class="btn btn-outline-danger button_right" (click)="deleteMultipleOrder()" >
+              <i class="bi bi-trash3-fill m-t-5 m-r-5"></i>
+              Delete Order
+            </button>
           </ng-template>
+
+          <!--Grid Checkbox logic-->
+          <kendo-grid-checkbox-column
+            [width]="45"
+            [resizable]="false"
+            [columnMenu]="false"
+            [showSelectAll]="true">
+          </kendo-grid-checkbox-column>
 
         <kendo-grid-column field="id" title="ID" [filterable]="false" [editable]="false"
                            [headerStyle]="{ 'background-color': '#87cefa' }"

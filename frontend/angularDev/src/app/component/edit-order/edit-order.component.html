@@ -33,7 +33,7 @@
         ></kendo-textbox>
         <div class="col-12" *ngIf="OrderForm.controls['item'].errors && (OrderForm.controls['item'].touched || OrderForm.controls['item'].dirty)">
           <div class="error-message" *ngIf="OrderForm.controls['item'].errors?.['required']" > Please Enter Item. </div>
-          <div class="error-message" *ngIf="OrderForm.controls['item'].errors?.['pattern']" > Please enter valid item</div>
+          <div class="error-message" *ngIf="OrderForm.controls['item'].errors?.['pattern']" > Please enter valid item details</div>
         </div>
       </kendo-formfield>
 
