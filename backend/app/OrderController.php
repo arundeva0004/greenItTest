@@ -39,7 +39,11 @@ class OrderController implements OrderInterface
 
             $this->logWrite('*****getAllCsvRecords - Starts ******');
 
-            if (($open = fopen(OrderController::CSV_FILE_PATH, "r")) !== FALSE)
+            if (!file_exists(self::CSV_FILE_PATH)) {
+                throw new Exception("OrderItems.csv file was not found");
+            }
+
+            if (($open = fopen(self::CSV_FILE_PATH, "r")) !== FALSE)
             {
                 $dataArray =[];
                 $headers = [];
@@ -102,7 +106,9 @@ class OrderController implements OrderInterface
                 }
             }
 
-
+            if (!file_exists(self::CSV_FILE_PATH)) {
+                throw new Exception("OrderItems.csv file was not found");
+            }
             $myFile = fopen(self::CSV_FILE_PATH, "a") or die("Unable to open file!");
             fwrite($myFile,  $string);
             rewind($myFile);
@@ -227,6 +233,11 @@ class OrderController implements OrderInterface
 
            $i = 0;
             $newData = [];
+
+            if (!file_exists(self::CSV_FILE_PATH)) {
+                throw new Exception("OrderItems.csv file was not found");
+            }
+
             $handle = fopen(self::CSV_FILE_PATH, "r");
 
             // READ CSV

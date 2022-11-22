@@ -29,14 +29,16 @@
           (remove)="deleteOrder($event)"
         >
           <ng-template kendoGridToolbarTemplate>
-            <button class="btn btn-outline-primary" (click)="addOrder()">
-              <i class="bi bi-plus-circle-fill m-t-5 m-r-5"></i>
-              New Order
-            </button>
-            <button [disabled]="orderSelectedRow.length == 0" class="btn btn-outline-danger button_right" (click)="deleteMultipleOrder()" >
-              <i class="bi bi-trash3-fill m-t-5 m-r-5"></i>
-              Delete Order
-            </button>
+
+            <div class="button_right_icon">
+              <button class="btn btn-outline-primary m-r-10" (click)="addOrder()">
+                <i class="bi bi-plus-circle-fill m-t-5" title="Add Order"></i>
+              </button>
+              <button [disabled]="orderSelectedRow.length == 0" class="btn btn-outline-danger" (click)="deleteMultipleOrder()">
+                <i class="bi bi-trash3-fill m-t-5" title="Delete Order"></i>
+              </button>
+            </div>
+
           </ng-template>
 
           <!--Grid Checkbox logic-->

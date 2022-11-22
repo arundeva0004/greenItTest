@@ -60,13 +60,14 @@ export class EditOrderComponent {
   public onSave(e: PointerEvent): void {
 
     e.preventDefault();
+    const orderInput = this.OrderForm.value;
     if(!this.isNew){
-      const orderInput = this.OrderForm.value;
       orderInput.id = this.editData.id;
       this.update.emit(orderInput);
     } else {
-      this.save.emit(this.OrderForm.value);
+      this.save.emit(orderInput);
     }
+    this.OrderForm.reset();
 
     this.active = false;
   }

@@ -58,7 +58,13 @@ export class OrderComponent implements OnInit {
   newOrder(formInput : any) : void {
 
     let postData = formInput;
-    postData.id = this.gridData.length + 1;
+    //get max of orderId for increment orderId
+    const ids = this.gridData.map((data: Order) => {
+      return data.id;
+    });
+    const max = Math.max(...ids);
+    postData.id = max + 1;
+
     this.isNew = this.active = false;
     this.orderService.newOrder(postData).subscribe( {
       next: (data: any) => {
@@ -153,10 +159,6 @@ export class OrderComponent implements OnInit {
   * */
   public deleteMultipleOrder(){
 
-    //We shouldn't allow to delete all the records
-    if(this.gridData.length == this.orderSelectedRow.length){
-      this.notifyService.showWarning("We should not allow to delete all the orders!!", "Order");
-    } else {
       const postData = {
         selected_rows : this.orderSelectedRow,
         multiple_order_delete : true
@@ -164,7 +166,7 @@ export class OrderComponent implements OnInit {
 
       this.orderService.deleteMultipleOrder(postData).subscribe({
           next: (data: any) => {
-            this.notifyService.showSuccess("Deleted order successfully !!", "Order");
+            this.notifyService.showSuccess("Order Deleted successfully !!", "Order");
             this.getAllOrders();
             this.orderSelectedRow = [];
           },
@@ -177,7 +179,6 @@ export class OrderComponent implements OnInit {
 
           }
         })
-    }
   }
 
 }

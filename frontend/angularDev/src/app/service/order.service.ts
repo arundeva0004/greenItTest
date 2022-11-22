@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import { Observable, catchError, throwError } from  'rxjs';
 import {Order} from "../model/Order";
-import {response} from "../model/response";
 
 
 @Injectable({
@@ -21,8 +20,8 @@ export class OrderService {
    * @param
    * @return array
    */
-  getAllOrders() : Observable<any> {
-    return this.httpClient.get(this.PHP_API_SERVER + 'OrderController.php',{}).pipe(
+  getAllOrders() : Observable<Order[]> {
+    return this.httpClient.get<Order[]>(this.PHP_API_SERVER + 'OrderController.php',{}).pipe(
       catchError(this.errorHandler)
     );
   }
@@ -32,8 +31,8 @@ export class OrderService {
    * @param data
    * @return object
    */
-  newOrder(data: object) : Observable<response> {
-    return this.httpClient.post<response>(this.PHP_API_SERVER + 'OrderController.php',JSON.stringify(data)).pipe(
+  newOrder(data: object) : Observable<Order> {
+    return this.httpClient.post<Order>(this.PHP_API_SERVER + 'OrderController.php',JSON.stringify(data)).pipe(
       catchError(this.errorHandler)
     );
   }
@@ -54,9 +53,9 @@ export class OrderService {
    * @returns
    * @param data
    */
-  deleteOrder(data: object) : Observable<response>{
+  deleteOrder(data: object) : Observable<Order>{
     let body= JSON.stringify(data);
-    return this.httpClient.delete<response>(this.PHP_API_SERVER + 'OrderController.php',{body}).pipe(
+    return this.httpClient.delete<Order>(this.PHP_API_SERVER + 'OrderController.php',{body}).pipe(
       catchError(this.errorHandler)
     );
   }
@@ -66,9 +65,9 @@ export class OrderService {
    * @returns
    * @param data
    */
-  deleteMultipleOrder(data: object) : Observable<response> {
+  deleteMultipleOrder(data: object) : Observable<Order> {
     let body= JSON.stringify(data);
-    return this.httpClient.delete<response>(this.PHP_API_SERVER + 'OrderController.php',{body}).pipe(
+    return this.httpClient.delete<Order>(this.PHP_API_SERVER + 'OrderController.php',{body}).pipe(
       catchError(this.errorHandler)
     );
   }

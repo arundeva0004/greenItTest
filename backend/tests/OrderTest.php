@@ -36,7 +36,7 @@ class OrderTest extends TestCase{
                 "id" => "1",
                 "name" => "Liquid Saffron",
                 "state"=> "NY",
-                "zip" => "089989",
+                "zip" => "08998",
                 "amount" => "25.43",
                 "qty" => "7",
                 "item" => "XCD45300"
